@@ -1,5 +1,5 @@
 flashtext==2.7
-keybert==0.5.1
+keybert==0.7.0
 keyphrase_vectorizers==0.0.7
 spacy==3.4.2
 streamlit==1.14.0
