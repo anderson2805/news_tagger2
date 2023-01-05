@@ -55,16 +55,17 @@ def get_tags(doc: str, usertags_exist: bool = usertags_exist, top_n: int = 10) -
     ner_kw = list(set(ner_kw))
     # Delta on user tags not identified, candidate_kw is used for zero-shot
     candidate_kw = list(set(usertags_list) - set(existing_kw))
+    print(set(existing_kw))
     ner_kw = list(set(ner_kw) - set(existing_kw))
 
     ner_kw = [keyword[0]
-              for keyword in bert_nlp.extract_keywords(docs=doc, candidates=ner_kw)]
+              for keyword in bert_nlp.extract_keywords(docs=doc, candidates=[x.lower() for x in ner_kw])]
     topic_kw = [keyword[0] for keyword in bert_nlp.extract_keywords(
-        docs=doc, candidates=candidate_kw)]
+        docs=doc, candidates=[x.lower() for x in candidate_kw])]
     theme_kw = [keyword[0] for keyword in bert_nlp.extract_keywords(
         docs=doc, vectorizer=vectorizer, use_mmr=True) if len(keyword[0].split(' ')) <= 5 ]
     combined_kw = [keyword[0] for keyword in bert_nlp.extract_keywords(docs=doc, candidates=list(
-        set(existing_kw+ner_kw+topic_kw+theme_kw)), use_mmr=True, top_n=top_n)]
+        set([x.lower() for x in existing_kw]+ner_kw+topic_kw+[x.lower() for x in theme_kw])), use_mmr=True, top_n=top_n)]
     # combined all keywords extracted
     #result_kw = list(set([keyword[0] for keyword in topic_kw] + [keyword[0] for keyword in entity_kw] + [keyword[0] for keyword in theme_kw]))
     results = {}
@@ -78,12 +79,8 @@ def get_tags(doc: str, usertags_exist: bool = usertags_exist, top_n: int = 10) -
 
 
 if __name__ == '__main__':
-    doc = """A commentary was written by Rajan Menon on the long war of attrition in Ukraine.
-Despite the Ukrainian army's battlefield advances and Russia's retreats, most recently from parts of Kherson province, Ukraine's economy had been left in tatters.
-For the Kyiv government, the cost of prosecuting the war while also meeting the material needs of its citizens would mount even if the Ukrainian army kept gaining ground.
-Worse, winter was looming and Russia, frustrated by the serial military failures it had experienced since Sep, seemed bent on crippling Ukraine's economy by taking the wrecking ball to its critical infrastructure.
-Aid to Ukraine would not dry up, nor would the Ukrainian economy collapse, but Western governments might find it harder, politically if not economically, to keep sending billions of dollars to Kyiv while their own citizens endured rising prices and increasing joblessness.
-Poland, Germany, and Hungary were now struggling to accommodate more Ukrainian refugees, and the mood in Europe had become less welcoming just when the outflow from Ukraine had picked up, following Russia's ramped-up attacks on cities.
+    doc = """PM Albanese Says He’s Not In Group Of Aussie Politicians Visiting Taiwan. Australia's Prime Minister Anthony Albanese said on 3 Dec (2022) that he would not be part of a group of federal politicians set to travel to Taiwan for a reported five-day visit aimed at conveying Canberra's wish to maintain peace in the Indo-Pacific. The report noted that according to Australian, the group, which included Australia's governing Labor Party and opposition Liberal-National coalition MPs, would fly to Taiwan on 4 Dec (2022) and would be the first delegation of its type to visit Taiwan since 2019 Mr Albanese had described the trip as a “backbench” visit to Taiwan, not a government-led one Mr Albanese said “There remains a bipartisan position when it comes to China, and when it comes to support for the status quo on Taiwan”
+when asked about the travelling politicians' intentions, Mr Albanese said “I have no idea, I'm not going, you should ask them” an Australian Department of Foreign Affairs and Trade spokesperson said politicians from various parties regularly travelled to Taiwan before the COVID-19 pandemic and that the current delegation “represents a resumption of that activity” the group would reportedly meet Taiwan President Tsai Ing-wen and Foreign Minister Joseph Wu, with the visit having support from Taiwan's Foreign Ministry the trip – reportedly kept secret to stop Chinese diplomats in Canberra lobbying for its cancellation – was said to include meetings on security, trade, agriculture and indigenous affairs the visit to Taiwan came as Australia's recently elected Labor government had moved to repair its strained diplomatic relations with China and Australia, like most countries, had no official diplomatic ties with Taiwan, but had previously joined the US in expressing concern over Chinese pressure, especially in military issues. 
     """
     print(usertags_exist)
     print(get_tags(doc))
