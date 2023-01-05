@@ -55,17 +55,17 @@ def get_tags(doc: str, usertags_exist: bool = usertags_exist, top_n: int = 10) -
     ner_kw = list(set(ner_kw))
     # Delta on user tags not identified, candidate_kw is used for zero-shot
     candidate_kw = list(set(usertags_list) - set(existing_kw))
-    print(set(existing_kw))
+
     ner_kw = list(set(ner_kw) - set(existing_kw))
 
     ner_kw = [keyword[0]
-              for keyword in bert_nlp.extract_keywords(docs=doc, candidates=[x.lower() for x in ner_kw])]
+              for keyword in bert_nlp.extract_keywords(docs=doc, candidates=ner_kw)]
     topic_kw = [keyword[0] for keyword in bert_nlp.extract_keywords(
-        docs=doc, candidates=[x.lower() for x in candidate_kw])]
+        docs=doc, candidates=candidate_kw)]
     theme_kw = [keyword[0] for keyword in bert_nlp.extract_keywords(
         docs=doc, vectorizer=vectorizer, use_mmr=True) if len(keyword[0].split(' ')) <= 5 ]
     combined_kw = [keyword[0] for keyword in bert_nlp.extract_keywords(docs=doc, candidates=list(
-        set([x.lower() for x in existing_kw]+ner_kw+topic_kw+[x.lower() for x in theme_kw])), use_mmr=True, top_n=top_n)]
+        set(existing_kw+ner_kw+topic_kw+theme_kw)), use_mmr=True, top_n=top_n)]
     # combined all keywords extracted
     #result_kw = list(set([keyword[0] for keyword in topic_kw] + [keyword[0] for keyword in entity_kw] + [keyword[0] for keyword in theme_kw]))
     results = {}
