@@ -17,7 +17,7 @@ vectorizer = KeyphraseCountVectorizer(
 
 spacy_nlp = spacy.load(SPACYPATH)
 bert_nlp = KeyBERT(BERTPATH)
-keyword_processor = KeywordProcessor(case_sensitive=True)
+keyword_processor = KeywordProcessor(case_sensitive=False)
 
 
 # TODO: For production, generate usertags.txt before running tags extraction on articles
