@@ -1,5 +1,7 @@
 flashtext==2.7
-keybert==0.7.0
+keybert==0.5.1
 keyphrase_vectorizers==0.0.7
+scipy == 1.7.3
 spacy==3.4.2
+sklearn ==1.1.1
 streamlit==1.14.0
