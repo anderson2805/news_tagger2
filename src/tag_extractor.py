@@ -1,10 +1,9 @@
 from keybert import KeyBERT
 from keyphrase_vectorizers import KeyphraseCountVectorizer
 import spacy
-from collections import Counter
 from flashtext import KeywordProcessor
 import os
-from collections import defaultdict
+import utils
 USERTAGSPATH = "data/usertags.txt"
 usertags_exist = os.path.isfile(USERTAGSPATH)
 
@@ -41,6 +40,7 @@ def get_tags(doc: str, usertags_exist: bool = usertags_exist, top_n: int = 10) -
         dict: return dict of keywords with 3 keys, user_tags, NER, keyphrase, topics (in no particular order) 
     """
 
+
     if usertags_exist == True:
         existing_kw = list(set(keyword_processor.extract_keywords(doc)))
     else:
@@ -50,8 +50,16 @@ def get_tags(doc: str, usertags_exist: bool = usertags_exist, top_n: int = 10) -
     ner_nlp = spacy_nlp(doc)
     for ent in ner_nlp.ents:
         if (ent.label_ in ['GPE', 'PERSON', 'ORG', 'LOC']):
-            ner_kw.append(
-                " ".join([token.text for token in spacy_nlp(ent.text) if not token.is_stop]))
+            entity = []
+            for index, token in enumerate(spacy_nlp(ent.text)):
+                if not ((index == 0 and token.is_stop) or token.is_punct):
+                    if (token.is_stop):
+                        entity.append(token.text)
+                    else:
+                        entity.append(token.text.title())
+
+            ner_kw.append(        
+            " ".join(entity))
     ner_kw = list(set(ner_kw))
     # Delta on user tags not identified, candidate_kw is used for zero-shot
     candidate_kw = list(set(usertags_list) - set(existing_kw))
@@ -79,8 +87,16 @@ def get_tags(doc: str, usertags_exist: bool = usertags_exist, top_n: int = 10) -
 
 
 if __name__ == '__main__':
-    doc = """PM Albanese Says He’s Not In Group Of Aussie Politicians Visiting Taiwan. Australia's Prime Minister Anthony Albanese said on 3 Dec (2022) that he would not be part of a group of federal politicians set to travel to Taiwan for a reported five-day visit aimed at conveying Canberra's wish to maintain peace in the Indo-Pacific. The report noted that according to Australian, the group, which included Australia's governing Labor Party and opposition Liberal-National coalition MPs, would fly to Taiwan on 4 Dec (2022) and would be the first delegation of its type to visit Taiwan since 2019 Mr Albanese had described the trip as a “backbench” visit to Taiwan, not a government-led one Mr Albanese said “There remains a bipartisan position when it comes to China, and when it comes to support for the status quo on Taiwan”
-when asked about the travelling politicians' intentions, Mr Albanese said “I have no idea, I'm not going, you should ask them” an Australian Department of Foreign Affairs and Trade spokesperson said politicians from various parties regularly travelled to Taiwan before the COVID-19 pandemic and that the current delegation “represents a resumption of that activity” the group would reportedly meet Taiwan President Tsai Ing-wen and Foreign Minister Joseph Wu, with the visit having support from Taiwan's Foreign Ministry the trip – reportedly kept secret to stop Chinese diplomats in Canberra lobbying for its cancellation – was said to include meetings on security, trade, agriculture and indigenous affairs the visit to Taiwan came as Australia's recently elected Labor government had moved to repair its strained diplomatic relations with China and Australia, like most countries, had no official diplomatic ties with Taiwan, but had previously joined the US in expressing concern over Chinese pressure, especially in military issues. 
-    """
+    doc = """TODAY Online (28 May) carried a forum letter by Ho Hua Chew in reference to a report published on 26 May (2020) titled "Researchers call for protection of sf training area to preserve feeding ground for Raffles' banded langur". The writer opined that at present, the forest to the north of Tagore Drive and the Tagore industrial estate was being used by the sf for training
+it had become even more important to wildlife in the Upper Thomson area, given that the forest patch to the south of it fringing Yio Chu Kang Road and the Teachers’ Estate — which was called the Tagore-Lentor Forest — was almost completely wiped out for a condominium development
+from as early as 2001, Singapore also had the critically endangered songbird, the straw-headed bulbul, in the forest patch north of Tagore Drive the straw-headed bulbul was listed as critically endangered in the International Union for Conservation of Nature’s (IUCN) Red List of Threatened Species
+given the demise of the neighbouring, connected forest around the Yio Chu Kang and Teachers’ Estate fringe, where there were also records of this bulbul species, it was most probable that the bulbuls here would take refuge in the forest north of Tagore Drive through a narrow forest belt to the east of the Tagore industrial estate
+there were also records of other nationally threatened bird species, such as the crested serpent eagle and the grey-headed fish eagle, in this patch north of Tagore Drive the grey-headed fish eagle was also in the IUCN’s Red List as “near-threatened”
+The Nature Society (Singapore) also believed that the Sunda pangolin, another critically endangered species globally, would have likewise taken refuge in this patch north of Tagore Drive the pangolin had been recorded in the forest patch fringing the Teachers’ Estate, which was, as mentioned, already mostly cleared
+with the presence of the Raffles’ banded langur, as primatologist Andie Ang noted in the TODAY Online report, the forest north of Tagore Drive was highly important for the well-being of Singapore's biodiversity and the Nature Society (Singapore) urged the authorities to do an environmental or a biophysical impact assessment, to determine at least some ecologically significant portion of the forested area for conservation before initiating any housing plan.
+
+
+(The writer is Vice-President of the Nature Society (Singapore).)"""
+
     print(usertags_exist)
     print(get_tags(doc))
