@@ -38,7 +38,7 @@ def get_tags(doc: str, usertags_exist: bool = usertags_exist, top_n: int = 10) -
     Returns:
         dict: return dict of keywords with 3 keys, user_tags, NER, keyphrase, topics (in no particular order) 
     """
-
+    doc = doc.replace('\n', ' ')
 
     if usertags_exist == True:
         existing_kw = list(set(keyword_processor.extract_keywords(doc)))
@@ -49,7 +49,6 @@ def get_tags(doc: str, usertags_exist: bool = usertags_exist, top_n: int = 10) -
     ner_nlp = spacy_nlp(doc)
     for ent in ner_nlp.ents:
         if (ent.label_ in ['GPE', 'PERSON', 'ORG', 'LOC']):
-            print(ent.text)
             entity = []
             for index, token in enumerate(spacy_nlp(ent.text)):
                 if not ((index == 0 and token.is_stop) or token.is_punct):
@@ -89,14 +88,19 @@ def get_tags(doc: str, usertags_exist: bool = usertags_exist, top_n: int = 10) -
 
 
 if __name__ == '__main__':
-    doc = """TODAY Online (28 May) carried a forum letter by Ho Hua Chew in reference to a report published on 26 May (2020) titled "Researchers call for protection of sf training area to preserve feeding ground for Raffles' banded langur". The writer opined that at present, the forest to the north of Tagore Drive and the Tagore industrial estate was being used by the sf for training
-it had become even more important to wildlife in the Upper Thomson area, given that the forest patch to the south of it fringing Yio Chu Kang Road and the Teachers' Estate — which was called the Tagore-Lentor Forest — was almost completely wiped out for a condominium development
-from as early as 2001, Singapore also had the critically endangered songbird, the straw-headed bulbul, in the forest patch north of Tagore Drive the straw-headed bulbul was listed as critically endangered in the International Union for Conservation of Nature's (IUCN) Red List of Threatened Species
-given the demise of the neighbouring, connected forest around the Yio Chu Kang and Teachers' Estate fringe, where there were also records of this bulbul species, it was most probable that the bulbuls here would take refuge in the forest north of Tagore Drive through a narrow forest belt to the east of the Tagore industrial estate
-there were also records of other nationally threatened bird species, such as the crested serpent eagle and the grey-headed fish eagle, in this patch north of Tagore Drive the grey-headed fish eagle was also in the IUCN's Red List as “near-threatened”
-The Nature Society (Singapore) also believed that the Sunda pangolin, another critically endangered species globally, would have likewise taken refuge in this patch north of Tagore Drive the pangolin had been recorded in the forest patch fringing the Teachers' Estate, which was, as mentioned, already mostly cleared
-with the presence of the Raffles' banded langur, as primatologist Andie Ang noted in the TODAY Online report, the forest north of Tagore Drive was highly important for the well-being of Singapore's biodiversity and the Nature Society (Singapore) urged the authorities to do an environmental or a biophysical impact assessment, to determine at least some ecologically significant portion of the forested area for conservation before initiating any housing plan.
+    doc = """The writer opined that
 
+at present, the forest to the north of Tagore Drive and the Tagore industrial estate was being used by the sf for training
+it had become even more important to wildlife in the Upper Thomson area, given that the forest patch to the south of it fringing Yio Chu Kang Road and the Teachers’ Estate — which was called the Tagore-Lentor Forest — was almost completely wiped out for a condominium development
+from as early as 2001, Singapore also had the critically endangered songbird, the straw-headed bulbul, in the forest patch north of Tagore Drive
+the straw-headed bulbul was listed as critically endangered in the International Union for Conservation of Nature’s (IUCN) Red List of Threatened Species
+given the demise of the neighbouring, connected forest around the Yio Chu Kang and Teachers’ Estate fringe, where there were also records of this bulbul species, it was most probable that the bulbuls here would take refuge in the forest north of Tagore Drive through a narrow forest belt to the east of the Tagore industrial estate
+there were also records of other nationally threatened bird species, such as the crested serpent eagle and the grey-headed fish eagle, in this patch north of Tagore Drive
+the grey-headed fish eagle was also in the IUCN’s Red List as “near-threatened”
+The Nature Society (Singapore) also believed that the Sunda pangolin, another critically endangered species globally, would have likewise taken refuge in this patch north of Tagore Drive
+the pangolin had been recorded in the forest patch fringing the Teachers’ Estate, which was, as mentioned, already mostly cleared
+with the presence of the Raffles’ banded langur, as primatologist Andie Ang noted in the TODAY Online report, the forest north of Tagore Drive was highly important for the well-being of Singapore's biodiversity and
+the Nature Society (Singapore) urged the authorities to do an environmental or a biophysical impact assessment, to determine at least some ecologically significant portion of the forested area for conservation before initiating any housing plan.
 
 (The writer is Vice-President of the Nature Society (Singapore).)"""
 
